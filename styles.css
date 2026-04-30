@@ -8,6 +8,13 @@
   --ss-red-dim:     rgba(215, 68, 61, 0.10);
   --ss-red-mid:     rgba(215, 68, 61, 0.30);
 
+  /* Business hours states */
+  --work-open:      #22c55e;
+  --work-open-dim:  rgba(34, 197, 94, 0.12);
+  --work-buffer:    #f59e0b;
+  --work-buffer-dim:rgba(245, 158, 11, 0.12);
+  --work-closed:    #444444;
+
   --bg:             #141414;
   --bg-card:        #1e1e1e;
   --bg-card-hover:  #252525;
@@ -92,6 +99,23 @@ body {
   align-items: center;
   gap: 4px;
 }
+
+.btn-24h {
+  height: 22px;
+  padding: 0 7px;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  font-family: var(--font);
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.btn-24h:hover { background: rgba(255,255,255,0.08); color: #fff; border-color: rgba(255,255,255,0.3); }
+.btn-24h.active { color: var(--ss-red); border-color: var(--ss-red-mid); background: var(--ss-red-dim); }
 
 .ctrl-btn {
   width: 26px;
@@ -220,6 +244,12 @@ body {
   border-left-color: transparent;
 }
 
+#tz-list li.focused {
+  background: var(--ss-red-dim);
+  color: var(--ss-red);
+  border-left-color: var(--ss-red);
+}
+
 #tz-list li .tz-badge {
   font-size: 9px;
   letter-spacing: 0.06em;
@@ -268,22 +298,33 @@ body {
 .clock-card {
   background: var(--bg-card);
   border: 1.5px solid var(--border);
-  border-left: 3px solid var(--ss-red);
+  border-left: 3px solid var(--work-closed);
   border-radius: var(--radius);
   padding: 12px 14px 10px;
   position: relative;
-  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+  cursor: grab;
+  transition: border-left-color 0.4s, background 0.2s, box-shadow 0.2s, opacity 0.15s;
   animation: slideIn 0.18s ease;
 }
+
+.clock-card[data-work-state="open"]   { border-left-color: var(--work-open); }
+.clock-card[data-work-state="buffer"] { border-left-color: var(--work-buffer); }
+.clock-card[data-work-state="closed"] { border-left-color: var(--work-closed); }
 
 @keyframes slideIn {
   from { opacity: 0; transform: translateY(-5px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-.clock-card:hover {
-  background: var(--bg-card-hover);
-  box-shadow: 0 2px 10px rgba(215, 68, 61, 0.08);
+.clock-card:hover { background: var(--bg-card-hover); }
+.clock-card[data-work-state="open"]:hover   { box-shadow: 0 2px 12px var(--work-open-dim); }
+.clock-card[data-work-state="buffer"]:hover { box-shadow: 0 2px 12px var(--work-buffer-dim); }
+
+/* Drag states */
+.clock-card.dragging { opacity: 0.35; cursor: grabbing; }
+.clock-card.drag-over {
+  border-top: 2px dashed var(--ss-red);
+  background: var(--ss-red-dim);
 }
 
 .clock-header {
@@ -291,6 +332,13 @@ body {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 6px;
+}
+
+.card-btns {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
 }
 
 /* Editable label */
@@ -342,6 +390,7 @@ body {
 
 .clock-card:hover .edit-icon { opacity: 1; }
 
+.btn-settings,
 .btn-remove {
   width: 22px;
   height: 22px;
@@ -358,8 +407,12 @@ body {
   transition: opacity 0.15s, background 0.15s, color 0.15s;
 }
 
+.clock-card:hover .btn-settings,
 .clock-card:hover .btn-remove { opacity: 1; }
-.btn-remove:hover { background: var(--danger-dim); color: var(--danger); }
+
+.btn-settings:hover  { background: rgba(255,255,255,0.07); color: var(--text-primary); }
+.btn-settings.active { opacity: 1; color: var(--ss-red); background: var(--ss-red-dim); }
+.btn-remove:hover    { background: var(--danger-dim); color: var(--danger); }
 
 /* Time display — bigger and bold */
 .clock-time {
@@ -370,7 +423,10 @@ body {
   line-height: 1;
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
+  cursor: copy;
+  transition: opacity 0.1s;
 }
+.clock-time:hover { opacity: 0.85; }
 
 .clock-time .seconds {
   font-size: 22px;
@@ -394,11 +450,29 @@ body {
   gap: 8px;
 }
 
+.meta-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
 .clock-date {
   font-size: 11px;
   color: var(--text-muted);
   letter-spacing: 0.03em;
 }
+
+.day-diff {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 1px 5px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+.day-diff.tomorrow  { color: #60a5fa; background: rgba(96,165,250,0.1);  border: 1px solid rgba(96,165,250,0.25); }
+.day-diff.yesterday { color: #f59e0b; background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.25); }
 
 .clock-offset {
   font-size: 10px;
@@ -433,6 +507,88 @@ body {
   font-size: 10px;
   color: var(--text-muted);
   letter-spacing: 0.04em;
+}
+
+/* ── Per-card settings panel ──────────────────────────────────── */
+.card-settings {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.settings-label {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.bh-inputs {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.bh-sep {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+input.bh-start,
+input.bh-end {
+  width: 76px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-primary);
+  font-size: 11px;
+  font-family: var(--font);
+  padding: 3px 6px;
+  outline: none;
+  text-align: center;
+  color-scheme: dark;
+  transition: border-color 0.15s;
+}
+input.bh-start:focus,
+input.bh-end:focus { border-color: var(--ss-red); }
+
+input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.4);
+  cursor: pointer;
+}
+
+/* ── Toast ────────────────────────────────────────────────────── */
+#toast {
+  position: fixed;
+  bottom: 36px;
+  left: 50%;
+  transform: translateX(-50%) translateY(6px);
+  background: rgba(28, 28, 28, 0.97);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  font-size: 11px;
+  font-family: var(--font);
+  padding: 5px 13px;
+  border-radius: 6px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s, transform 0.18s;
+  white-space: nowrap;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+  z-index: 200;
+}
+#toast.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }
 
 /* ── Utility ──────────────────────────────────────────────────── */
