@@ -428,12 +428,6 @@ body {
 }
 .clock-time:hover { opacity: 0.85; }
 
-.clock-time .seconds {
-  font-size: 22px;
-  font-weight: 400;
-  color: var(--text-muted);
-}
-
 .clock-time .ampm {
   font-size: 14px;
   color: var(--text-muted);
