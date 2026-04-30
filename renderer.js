@@ -358,11 +358,12 @@ function startTick() {
   if (tickInterval) clearInterval(tickInterval);
   if (tickTimeout)  clearTimeout(tickTimeout);
   tick();
-  const msToNextSecond = 1000 - new Date().getMilliseconds();
+  const now = new Date();
+  const msToNextMinute = (60 - now.getSeconds()) * 1000 - now.getMilliseconds();
   tickTimeout = setTimeout(() => {
     tick();
-    tickInterval = setInterval(tick, 1000);
-  }, msToNextSecond);
+    tickInterval = setInterval(tick, 60_000);
+  }, msToNextMinute);
 }
 
 function tick() {
@@ -383,11 +384,11 @@ function updateCard(card, clock, now = new Date(), localDateStr = now.toLocaleDa
   if (!timeEl) return;
 
   try {
-    const { h12, minutes, seconds, ampm } = formatTime(clock.iana, now);
+    const { h12, minutes, ampm } = formatTime(clock.iana, now);
     if (format24h) {
-      timeEl.innerHTML = `${h12}:${minutes}<span class="seconds">:${seconds}</span>`;
+      timeEl.innerHTML = `${h12}:${minutes}`;
     } else {
-      timeEl.innerHTML = `${h12}:${minutes}<span class="seconds">:${seconds}</span><span class="ampm">${ampm}</span>`;
+      timeEl.innerHTML = `${h12}:${minutes}<span class="ampm">${ampm}</span>`;
     }
 
     if (dateEl)   dateEl.textContent   = formatDate(clock.iana, now);
@@ -411,21 +412,20 @@ function updateCard(card, clock, now = new Date(), localDateStr = now.toLocaleDa
 function formatTime(iana, now = new Date()) {
   if (format24h) {
     const timeStr = now.toLocaleTimeString('en-GB', {
-      timeZone: iana, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false,
+      timeZone: iana, hour: '2-digit', minute: '2-digit', hour12: false,
     });
-    const [h, m, s] = timeStr.split(':');
-    return { h12: h, minutes: m, seconds: s, ampm: '' };
+    const [h, m] = timeStr.split(':');
+    return { h12: h, minutes: m, ampm: '' };
   }
 
   const timeStr = now.toLocaleTimeString('en-US', {
-    timeZone: iana, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true,
+    timeZone: iana, hour: '2-digit', minute: '2-digit', hour12: true,
   });
-  const match = timeStr.match(/^(\d{2}):(\d{2}):(\d{2})\s?(AM|PM)$/i);
+  const match = timeStr.match(/^(\d{2}):(\d{2})\s?(AM|PM)$/i);
   return {
     h12:     match ? match[1] : '--',
     minutes: match ? match[2] : '--',
-    seconds: match ? match[3] : '--',
-    ampm:    match ? match[4] : '',
+    ampm:    match ? match[3] : '',
   };
 }
 
