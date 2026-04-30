@@ -1,0 +1,44 @@
+{
+  "name": "timezone-widget",
+  "version": "1.0.0",
+  "description": "Desktop timezone clock widget",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win --x64",
+    "build:installer": "electron-builder --win nsis --x64"
+  },
+  "build": {
+    "appId": "com.surgicalscience.timezone-widget",
+    "productName": "World Clock Widget",
+    "copyright": "Surgical Science AB",
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "World Clock Widget"
+    },
+    "files": [
+      "**/*",
+      "!node_modules/.cache",
+      "!*.log"
+    ]
+  },
+  "dependencies": {
+    "electron-store": "^8.1.0"
+  },
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.1"
+  }
+}

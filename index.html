@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>World Clock Widget</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Custom title bar / drag region -->
+  <div id="titlebar">
+    <div id="titlebar-logo">
+      <!-- Surgical Science red hexagon motif -->
+      <svg width="22" height="22" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20 2L36 11V29L20 38L4 29V11L20 2Z" fill="#d7443d"/>
+        <path d="M20 9L29 14V24L20 29L11 24V14L20 9Z" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1"/>
+        <circle cx="20" cy="19.5" r="3.5" fill="white" opacity="0.9"/>
+      </svg>
+      <span id="titlebar-text">World Clock</span>
+    </div>
+    <div id="titlebar-controls">
+      <button id="btn-pin" title="Toggle always on top" class="ctrl-btn pin-active">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z"/></svg>
+      </button>
+      <button id="btn-min" title="Minimise" class="ctrl-btn">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M20 14H4v-2h16v2z"/></svg>
+      </button>
+      <button id="btn-close" title="Close" class="ctrl-btn close-btn">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Red accent stripe -->
+  <div id="titlebar-accent"></div>
+
+  <!-- Add timezone panel -->
+  <div id="add-panel">
+    <div id="search-wrap">
+      <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+      <input id="tz-search" type="text" placeholder="Search timezones…" autocomplete="off" spellcheck="false" />
+      <button id="btn-clear-search" class="clear-btn" title="Clear search">✕</button>
+    </div>
+    <div id="tz-dropdown" class="hidden">
+      <ul id="tz-list"></ul>
+    </div>
+  </div>
+
+  <!-- Active clocks -->
+  <div id="clocks-container">
+    <div id="empty-state">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#00C8E8" stroke-width="1.5" opacity="0.4"/><path d="M12 6v6l4 2" stroke="#00C8E8" stroke-width="1.5" stroke-linecap="round" opacity="0.4"/></svg>
+      <p>Search for a timezone above<br/>to add your first clock.</p>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div id="footer">
+    <span id="footer-brand">SURGICAL SCIENCE AB</span>
+    <span id="footer-date"></span>
+  </div>
+
+  <script src="timezones.js"></script>
+  <script src="renderer.js"></script>
+</body>
+</html>
