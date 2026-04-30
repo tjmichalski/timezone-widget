@@ -19,6 +19,7 @@
       <span id="titlebar-text">World Clock</span>
     </div>
     <div id="titlebar-controls">
+      <button id="btn-24h" class="btn-24h" title="Toggle 12h / 24h">12H</button>
       <button id="btn-pin" title="Toggle always on top" class="ctrl-btn pin-active">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z"/></svg>
       </button>
@@ -59,6 +60,8 @@
     <span id="footer-brand">SURGICAL SCIENCE AB</span>
     <span id="footer-date"></span>
   </div>
+
+  <div id="toast"></div>
 
   <script src="timezones.js"></script>
   <script src="renderer.js"></script>
