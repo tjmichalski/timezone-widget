@@ -20,6 +20,7 @@ function createWindow() {
     minHeight: 400,
     x: savedPos ? savedPos.x : width - 420,
     y: savedPos ? savedPos.y : 60,
+    icon: path.join(__dirname, 'assets', 'icon.ico'),
     frame: false,
     transparent: true,
     alwaysOnTop: store.get('alwaysOnTop', true),
