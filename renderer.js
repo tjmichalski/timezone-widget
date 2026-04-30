@@ -33,9 +33,10 @@ async function init() {
     if (pinned === false) btnPin.classList.remove('pin-active');
 
     format24h = !!(await window.electronAPI.storeGet('format24h'));
-    btn24h.textContent = format24h ? '24H' : '12H';
-    btn24h.classList.toggle('active', format24h);
   }
+
+  btn24h.textContent = format24h ? '24H' : '12H';
+  btn24h.classList.toggle('active', format24h);
 
   renderAllClocks();
   startTick();
@@ -324,7 +325,7 @@ function buildCard(clock) {
   timeEl.addEventListener('click', () => {
     const { h12, minutes, ampm } = formatTime(clock.iana, new Date());
     const text = format24h ? `${h12}:${minutes}` : `${h12}:${minutes} ${ampm}`;
-    navigator.clipboard?.writeText(text).then(() => showToast('Copied!'));
+    navigator.clipboard?.writeText(text)?.then(() => showToast('Copied!'));
   });
 
   /* Drag-and-drop — skip drag initiation from interactive children */
@@ -350,6 +351,7 @@ function buildCard(clock) {
     if (!dragSrcId || dragSrcId === clock.id) return;
     const srcIdx  = activeClocks.findIndex(c => c.id === dragSrcId);
     const destIdx = activeClocks.findIndex(c => c.id === clock.id);
+    dragSrcId = null;
     if (srcIdx < 0 || destIdx < 0) return;
     const [moved] = activeClocks.splice(srcIdx, 1);
     activeClocks.splice(destIdx, 0, moved);
@@ -450,15 +452,17 @@ function getDayDiff(iana, now) {
   return 0;
 }
 
+const _hourFormatters = new Map();
 function getWorkState(iana, bh, now) {
-  const parts = new Intl.DateTimeFormat('en-US', {
-    timeZone: iana, hour: 'numeric', hour12: false,
-  }).formatToParts(now);
+  if (!_hourFormatters.has(iana)) {
+    _hourFormatters.set(iana, new Intl.DateTimeFormat('en-US', { timeZone: iana, hour: 'numeric', hour12: false }));
+  }
+  const parts = _hourFormatters.get(iana).formatToParts(now);
   let hour = parseInt(parts.find(p => p.type === 'hour').value);
   if (hour === 24) hour = 0;
 
   const { start, end } = bh;
-  if (hour >= start && hour < end)                                          return 'open';
+  if (hour >= start && hour < end)                                             return 'open';
   if ((hour >= start - 1 && hour < start) || (hour >= end && hour < end + 1)) return 'buffer';
   return 'closed';
 }
