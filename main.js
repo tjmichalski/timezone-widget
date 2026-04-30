@@ -66,6 +66,8 @@ function createTray() {
   });
 }
 
+app.setAppUserModelId('com.surgicalscience.timezone-widget');
+
 app.whenReady().then(() => {
   createWindow();
   try { createTray(); } catch (_) { /* tray is optional */ }
